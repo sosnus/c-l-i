@@ -5,6 +5,7 @@ char * ptr;
 const int ledr = 9;
 const int ledg = 10;
 const int ledb = 11;
+//int rgbval[3] = [0,0,0];
 
 
 void setup() {
@@ -26,18 +27,19 @@ void loop() {
 void serialEvent() {
   int i = 0;
   while (Serial.available()) {
-    inputString = Serial.readString();
         Serial.print("New msg in buff: ");
+    inputString = Serial.readString();
     Serial.println(inputString);
     rgbToPwm();
 
   }
 }
 
-
-
 void rgbToPwm(){
   String r = inputString.substring(4, 7);
-  Serial.println(r);
-   analogWrite(ledr,r.toInt());
+  
+   analogWrite(ledr,inputString.substring(4, 7).toInt());
+   analogWrite(ledg,inputString.substring(9, 12).toInt());
+   analogWrite(ledb,inputString.substring(14, 17).toInt());
+   Serial.println(r);
 }
