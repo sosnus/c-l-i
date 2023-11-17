@@ -1,9 +1,14 @@
 import subprocess
 import time
 import serial
+import re
+#                 b   g    r
+cmd_low  = "rgb(000, 126, 000)"
+cmd_med  = "rgb(000, 080, 255)"
+cmd_high = "rgb(000, 000, 126)"
 
 commandTab = ["wmic", "cpu", "get", "loadpercentage", "/value"]
-serialName = "COM6" # '/dev/ttyUSB0'
+serialName = "COM3" # '/dev/ttyUSB0'
 ser = serial.Serial(serialName)
 
 def extract(s):
@@ -22,13 +27,39 @@ def extract(s):
 
 
 while True:
+# if True:
   localtime = time.localtime()
   result = time.strftime("%H:%M:%S", localtime)
   print(result, end = "  ", flush=True)
   myOut = subprocess.check_output(commandTab, shell=True)
   print(extract(str(myOut)+"%"), flush=True)
-  ser.write(extract(str(myOut)).encode())
-  time.sleep(5)
+  cpuloadStr = str(myOut)
+
+  # digits = re.findall(r'\d', cpuload)
+  digits = re.findall(r'\d+', cpuloadStr)
+  print("cpuload")
+  cpuload = int(digits[0])
+  print(cpuload)
+  # print(digits[0])
+
+  if cpuload > 10:
+    ser.write(extract(str(cmd_high)).encode())
+  elif cpuload > 5:
+    ser.write(extract(str(cmd_med)).encode())
+  else:
+    ser.write(extract(str(cmd_low)).encode())
+
+
+  # char = "="
+  # cpuload = cpuload[cpuload.find(char)+1:]
+  # char = "\r"
+  # cpuload2 = cpuload.replace(char, "")
+  # # cpuload = cpuload[:cpuload.find(char)+1]
+  # print("cpuload")
+  # print(cpuload)
+  # print(cpuload2)
+  # ser.write(extract(str(myOut)).encode())
+  time.sleep(3)
 
 ser.close()
 
