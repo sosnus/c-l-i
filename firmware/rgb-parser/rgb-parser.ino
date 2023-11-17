@@ -1,16 +1,23 @@
-char message[] = {"rgb(126, 127, 128)"};
+//char message[] = {"rgb(126, 127, 128)"};
+String inputString = ""; 
 bool stringComplete = false;  // whether the string is complete
 char * ptr;
+const int ledr = 9;
+const int ledg = 10;
+const int ledb = 11;
 
 
 void setup() {
   Serial.begin(9600);
+  pinMode(ledr, OUTPUT);
+pinMode(ledg, OUTPUT);
+pinMode(ledb, OUTPUT);
 }
 
 void loop() {
   if (stringComplete) {
     Serial.print("New: ");
-    Serial.println(message);
+    Serial.println(inputString);
     rgbToPwm();
     stringComplete = false;
   }
@@ -19,48 +26,18 @@ void loop() {
 void serialEvent() {
   int i = 0;
   while (Serial.available()) {
-    char inChar = (char)Serial.read();
-    message[i]= inChar;
-    ++i;
-    Serial.print(inChar);
+    inputString = Serial.readString();
+        Serial.print("New msg in buff: ");
+    Serial.println(inputString);
+    rgbToPwm();
 
-    if (inChar == '\n') {
-      stringComplete = true;
-    Serial.print("New msg in buff: ");
-    Serial.println(message);
-    }
   }
 }
 
-void printPtr()
-{
-//Serial.print("ptr=");
-//Serial.println(ptr);
 
-}
 
 void rgbToPwm(){
-         char mymessage[30] = {};
-  strcpy(mymessage,message);
-       char * ptr;
-printPtr();
-        ptr = strtok(mymessage, "("); //move past (
-printPtr();
-        ptr = strtok(NULL, ",");  //next comma is red
-        byte RED = atoi(ptr);
-printPtr();
-        Serial.println("SET LEDS TO....");
-        Serial.print(RED);
-        ptr = strtok(NULL, ",");  //next comma is green
-printPtr();
-        byte GREEN = atoi(ptr);
-        Serial.print(GREEN);
-        ptr = strtok(NULL, ",");  //next comma is blue
-        byte BLUE = atoi(ptr);
-        Serial.println(BLUE);
-        
-// strncpy(message, "iqbal", sizeof(a) - 1);
-        // for(int i = 0; i >)
-        // delay(2000);
-  
+  String r = inputString.substring(4, 7);
+  Serial.println(r);
+   analogWrite(ledr,r.toInt());
 }
