@@ -3,6 +3,7 @@ import time
 import serial
 import re
 #                 b   g    r
+cmd_init  = "rgb(126, 000, 000)"
 cmd_low  = "rgb(000, 126, 000)"
 cmd_med  = "rgb(000, 080, 255)"
 cmd_high = "rgb(000, 000, 126)"
@@ -10,6 +11,7 @@ cmd_high = "rgb(000, 000, 126)"
 commandTab = ["wmic", "cpu", "get", "loadpercentage", "/value"]
 serialName = "COM3" # '/dev/ttyUSB0'
 ser = serial.Serial(serialName)
+ser.write(str(cmd_init).encode())
 
 def extract(s):
     s1 = s[s.find('=')+1:]
@@ -26,10 +28,17 @@ while True:
 
   digits = re.findall(r'\d+', cpuloadStr)
   print("cpuload")
-  cpuload = int(digits[0])
+  if len(digits) == 0:
+    cpuload = 101
+    print("encoding error, message: ")
+    print(cpuloadStr)
+  else:
+    cpuload = int(digits[0])
   print(cpuload)
 
-  if cpuload > 10:
+  if cpuload == 101:
+    ser.write(extract(str(cmd_init)).encode())
+  elif cpuload > 10:
     ser.write(extract(str(cmd_high)).encode())
   elif cpuload > 5:
     ser.write(extract(str(cmd_med)).encode())
