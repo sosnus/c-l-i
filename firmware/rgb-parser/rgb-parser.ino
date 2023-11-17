@@ -34,26 +34,27 @@ void serialEvent() {
 
 void printPtr()
 {
-Serial.print("ptr=");
-Serial.println(ptr);
+//Serial.print("ptr=");
+//Serial.println(ptr);
 
 }
 
 void rgbToPwm(){
-         char message[] = {str()};
+         char mymessage[30] = {};
+  strcpy(mymessage,message);
        char * ptr;
 printPtr();
-        ptr = strtok(message, "("); //move past (
+        ptr = strtok(mymessage, "("); //move past (
 printPtr();
         ptr = strtok(NULL, ",");  //next comma is red
         byte RED = atoi(ptr);
 printPtr();
         Serial.println("SET LEDS TO....");
-        Serial.println(RED);
+        Serial.print(RED);
         ptr = strtok(NULL, ",");  //next comma is green
 printPtr();
         byte GREEN = atoi(ptr);
-        Serial.println(GREEN);
+        Serial.print(GREEN);
         ptr = strtok(NULL, ",");  //next comma is blue
         byte BLUE = atoi(ptr);
         Serial.println(BLUE);
